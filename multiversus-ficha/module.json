@@ -5,7 +5,7 @@
   "compatibility": {
     "minimum": "13",
     "verified": "13"
-    "manifest": "COLE_O_LINK_RAW_DO_PASSO_2_AQUI",
+    "manifest": https://raw.githubusercontent.com/hicarositi-pixel/multiversus-ficha/refs/heads/main/multiversus-ficha/module.json
     "download": "LINK_PARA_O_ARQUIVO_ZIP_DO_SEU_MODULO",
   },
   "styles": [
