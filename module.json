@@ -6,7 +6,7 @@
     "minimum": "11",
     "verified": "12"
   },
-  "manifest": "https://raw.githubusercontent.com/hicarositi-pixel/multiversus-ficha/refs/heads/main/multiversus-ficha/module.json",
+  "manifest": "https://raw.githubusercontent.com/hicarositi-pixel/multiversus-ficha/refs/heads/main/module.json",
   "download": "https://github.com/hicarositi-pixel/multiversus-ficha/archive/refs/heads/main.zip",
   "styles": [
     "style.css",
