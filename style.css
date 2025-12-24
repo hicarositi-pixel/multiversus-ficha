@@ -1,0 +1,238 @@
+/* ===============================
+   ESTRUTURA GLOBAL E VÍDEO
+   =============================== */
+
+/* 1. Limpa a janela do Foundry para o vídeo aparecer */
+.window-app .window-content {
+    position: relative;
+    overflow: hidden !important; /* Mantém o vídeo dentro da moldura */
+    background: none !important; 
+    background-image: none !important;
+    padding: 0 !important;
+}
+
+/* 2. O Vídeo de Fundo */
+video.theme-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0; 
+    pointer-events: none;
+    opacity: 1; /* Ajuste a opacidade conforme o vídeo */
+    border-radius: 0 0 5px 5px;
+}
+
+/* 3. O FORMULÁRIO (Onde o Scroll acontece) */
+.window-app form.editable {
+    position: relative;
+    z-index: 1; /* Fica na frente do vídeo */
+    height: 100%;
+    overflow-y: auto !important; /* DEVOLVE O SCROLL */
+    padding: 10px 15px; /* Espaçamento interno */
+    background: transparent !important;
+}
+
+/* Força transparência em elementos teimosos do Wild Talents */
+.window-app .sheet-body, 
+.window-app .tab,
+.window-app section {
+    background: transparent !important;
+}
+
+/* ===============================
+   TEMA BASE (Variáveis primeiro!)
+   =============================== */
+.window-app.theme-base {
+    --text-color: #000000;
+    --border-color: #4a90e2;
+    --input-bg: rgba(255, 255, 255, 0.4);
+}
+
+.window-app.theme-dark {
+    --text-color: #ffffff;
+    --border-color: #ff0000;
+    --input-bg: rgba(0, 0, 0, 0.6);
+}
+
+/* Aplicando o Tema Base */
+.theme-base {
+    color: var(--text-color);
+    /* Removido o background linear-gradient para não cobrir o vídeo */
+}
+
+.theme-base input, 
+.theme-base select, 
+.theme-base textarea {
+    background: var(--input-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-color) !important;
+}
+
+/* ===============================
+   ABAS — MULTIVERSUS RPG
+   =============================== */
+.window-content form.editable nav.sheet-tabs { 
+    display: flex; 
+    gap: 6px; 
+    padding: 0 8px; 
+    margin-bottom: 12px; 
+    border-bottom: 1px solid rgba(255,255,255,0.15); 
+} 
+
+.window-content form.editable nav.sheet-tabs .item { 
+    padding: 6px 14px; 
+    background: rgba(0,0,0,0.7); /* Transparência para ver o vídeo atrás */
+    border-radius: 6px 6px 0 0; 
+    font-weight: 600; 
+    color: #ffcc00; 
+    transition: all 0.15s ease; 
+} 
+
+.window-content form.editable nav.sheet-tabs .item.active { 
+    background: #222; 
+    color: #ff0000; 
+    border-bottom: 2px solid #ff0000; 
+}
+
+/* ===============================
+   INTERFACE (ENGRENAGEM)
+   =============================== */
+.theme-gear-container {
+    position: sticky; /* Sticky para acompanhar o topo ao rolar */
+    top: 0;
+    right: 0;
+    float: right;
+    z-index: 200;
+    margin-bottom: -32px; /* Não empurra o conteúdo */
+}
+
+.gear-button {
+    background: rgba(68, 68, 68, 0.8);
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* ========================================================
+   CORREÇÃO DE CORES: TEXTOS E CAMPOS EM BRANCO
+   ======================================================== */
+
+/* Títulos H2 e H3 */
+.window-app h2, 
+.window-app h3 {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px #000000 !important;
+}
+
+/* Labels gerais e a classe específica 'nowrap grow' */
+.window-app label,
+.window-app label.nowrap.grow {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px #000000 !important;
+}
+
+/* Inputs de todos os tipos (incluindo a classe 'grow') */
+.window-app input,
+.window-app input.grow,
+.window-app input[type="text"],
+.window-app input[type="number"] {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil para visibilidade */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Área de Anotações Rápidas */
+.window-app textarea.quick-notes-editor {
+    color: #ffffff !important;
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Garante que o texto digitado dentro dos inputs também seja branco */
+.window-app input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ========================================================
+   TEXTOS DE DIVS E BOTÕES DE AÇÃO
+   ======================================================== */
+
+/* Texto das partes do corpo e textos em divs 'grow' */
+.window-app .nowrap.grow,
+.window-app .grow {
+    color: #ffffff !important;
+    text-shadow: 1px 1px 2px #000000 !important;
+}
+
+/* Botões de Rolagem (Dados) */
+.window-app .roll-stat,
+.window-app .roll-skill {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.window-app .roll-stat:hover,
+.window-app .roll-skill:hover {
+    background: rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 0 5px #ffffff;
+}
+
+/* Botões de Adicionar (+) e Remover (-) */
+/* Seleciona todos que começam com 'add-' ou 'remove-' */
+.window-app button[class*="add-"],
+.window-app button[class*="remove-"] {
+    color: #ffffff !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid #ffffff !important;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+
+.window-app button[class*="add-"]:hover {
+    background: rgba(0, 255, 0, 0.3) !important; /* Verde sutil no adicionar */
+}
+
+.window-app button[class*="remove-"]:hover {
+    background: rgba(255, 0, 0, 0.3) !important; /* Vermelho sutil no remover */
+}
+
+/* Garante que os ícones do FontAwesome dentro dos botões sig
+
+/* ========================================================
+   FUNDO DOS EDITORES DE TEXTO (TINYMCE)
+   ======================================================== */
+
+/* Aplica fundo branco à área do editor e ao conteúdo interno */
+.window-app .editor,
+.window-app .editor-content {
+    background: #ffffff !important;
+    color: #000000 !important; /* Texto preto para contrastar com o fundo branco */
+    border-radius: 4px;
+    min-height: 100px;
+    padding: 5px;
+}
+
+/* Garante que o texto digitado dentro do editor seja preto */
+.window-app .editor-content * {
+    color: #000000 !important;
+}
+
+/* Estilo do botão de editar (o ícone de caneta) */
+.window-app .editor-edit {
+    color: #4a90e2 !important; /* Cor azul para destacar o botão */
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-radius: 50%;
+    padding: 4px;
+}
