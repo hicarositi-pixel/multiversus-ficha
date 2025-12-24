@@ -6,7 +6,7 @@
     "minimum": "13",
     "verified": "13"
     "manifest": https://raw.githubusercontent.com/hicarositi-pixel/multiversus-ficha/refs/heads/main/multiversus-ficha/module.json
-    "download": "LINK_PARA_O_ARQUIVO_ZIP_DO_SEU_MODULO",
+    "download": https://github.com/hicarositi-pixel/multiversus-ficha/archive/refs/heads/main.zip
   },
   "styles": [
     "style.css",
