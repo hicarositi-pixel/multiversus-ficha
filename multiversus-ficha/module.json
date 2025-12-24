@@ -1,0 +1,19 @@
+{
+  "id": "multiversus-ficha",
+  "title": "Multiversus – Ficha Visual",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13"
+  },
+  "styles": [
+    "style.css",
+    "themes/base/theme.css",
+    "themes/lobby/theme.css",
+    "themes/dark/theme.css"
+  ],
+  "esmodules": [
+    "multiversusData.js",
+    "module.js"
+  ]
+}
