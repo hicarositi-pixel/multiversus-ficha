@@ -5,6 +5,8 @@
   "compatibility": {
     "minimum": "13",
     "verified": "13"
+    "manifest": "COLE_O_LINK_RAW_DO_PASSO_2_AQUI",
+    "download": "LINK_PARA_O_ARQUIVO_ZIP_DO_SEU_MODULO",
   },
   "styles": [
     "style.css",
