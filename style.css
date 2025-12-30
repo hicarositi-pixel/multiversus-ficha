@@ -236,3 +236,543 @@ video.theme-background {
     border-radius: 50%;
     padding: 4px;
 }
+
+.window-content form.editable nav.sheet-tabs { display:flex; gap:6px; padding:0 8px; margin-bottom:12px; border-bottom:1px solid rgba(255,255,255,0.15); } .window-content form.editable nav.sheet-tabs .item { padding:6px 14px; background:black; border-radius:6px 6px 0 0; font-weight:600; color:#ffcc00; transition:all 0.15s ease; } .window-content form.editable nav.sheet-tabs .item:hover { background:#111; color:#ffffff; } .window-content form.editable nav.sheet-tabs .item.active { background:#222; color:#ff0000; border-bottom:2px solid #ff0000; }
+
+/* Move o controle de redimensionamento para a frente de tudo e para fora do corte */
+.window-app .window-resizable-handle {
+    z-index: 1000 !important;
+    bottom: -2px !important;
+    right: -2px !important;
+    background: rgba(255, 255, 255, 0.5); /* Torna o triângulo visível */
+    clip-path: polygon(100% 0, 100% 100%, 0 100%); /* Mantém o formato de triângulo */
+    width: 15px;
+    height: 15px;
+}
+
+/* 1. Força a janela do Custom CSS a permitir scroll interno */
+#ccss-settings-form .window-content {
+    overflow-y: auto !important;
+    max-height: 80vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* 2. Garante que os containers dos editores não sumam e permitam scroll */
+#ccss-super-container {
+    overflow: visible !important;
+    display: block !important;
+}
+
+/* 3. Ataca diretamente o CodeMirror (o editor de texto em si) */
+.ccss-stylesheet-container .cm-editor {
+    height: auto !important;
+    min-height: 200px !important;
+    max-height: 400px !important; /* Limita cada editor para um não empurrar o outro pra fora */
+}
+
+.ccss-stylesheet-container .cm-scroller {
+    overflow: auto !important;
+}
+
+/* 4. Estilização da barra de rolagem (Scrollbar) para facilitar o clique */
+#ccss-settings-form ::-webkit-scrollbar {
+    width: 10px !important;
+}
+
+#ccss-settings-form ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2) !important;
+}
+
+#ccss-settings-form ::-webkit-scrollbar-thumb {
+    background: #4a90e2 !important;
+    border-radius: 5px !important;
+    border: 1px solid white !important;
+}
+
+
+/* ========================================================
+   MOLDURA TECH + MANUTENÇÃO DA IMAGEM ORIGINAL
+   ======================================================== */
+
+.healthbox {
+    width: 28px !important;
+    height: 28px !important;
+    position: relative;
+    
+    /* MOLDURA: Cantos chanfrados e borda neon */
+    border: 1px solid rgba(74, 144, 226, 0.6) !important;
+    background-color: rgba(0, 20, 40, 0.4) !important;
+    clip-path: polygon(20% 0%, 100% 0, 100% 80%, 80% 100%, 0 100%, 0% 20%);
+    
+    /* IMAGEM ORIGINAL: Garante que ela apareça e centralize */
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 70% !important; /* Ajusta a imagem dentro da moldura */
+    
+    transition: all 0.1s ease;
+    cursor: pointer;
+    display: inline-block !important;
+}
+
+/* Esconde números ou textos que o HTML injeta por cima */
+.healthbox * {
+    display: none !important;
+}
+
+/* ========================================================
+   ANIMAÇÕES DE IMPACTO (CLIQUE)
+   ======================================================== */
+
+/* Quando o botão é pressionado, a ficha treme e brilha em vermelho */
+.window-app:has(.healthbox:active) .window-content {
+    animation: sheet-impact 0.15s ease-in-out infinite;
+    box-shadow: inset 0 0 40px rgba(255, 0, 0, 0.4) !important;
+}
+
+/* Feedback visual direto na Moldura ao clicar */
+.healthbox:active {
+    transform: scale(0.85);
+    border-color: #ff0000 !important;
+    box-shadow: 0 0 15px #ff0000;
+    filter: brightness(1.5);
+}
+
+/* Se a caixa estiver com dano (Shock ou Killing), a moldura brilha */
+.healthbox.shock, .healthbox.killing {
+    border-color: rgba(255, 50, 50, 0.8) !important;
+    box-shadow: inset 0 0 8px rgba(255, 0, 0, 0.3);
+}
+
+/* --- ESTADO 1: SAUDÁVEL (Verde) --- */
+.healthbox.healthy, .healthbox:not(.shock):not(.killing) {
+    border-color: #00ff88 !important; /* Verde Esmeralda Neon */
+    background-color: rgba(0, 255, 136, 0.1) !important;
+    box-shadow: 0 0 8px rgba(0, 255, 136, 0.4), 
+                inset 0 0 4px rgba(0, 255, 136, 0.2) !important;
+}
+
+/* --- ESTADO 2: SHOCK (Laranja) --- */
+.healthbox.shock {
+    border-color: #ff8c00 !important; /* Laranja */
+    background-color: rgba(255, 140, 0, 0.15) !important;
+    box-shadow: 0 0 12px rgba(255, 140, 0, 0.6), 
+                inset 0 0 8px rgba(255, 140, 0, 0.4) !important;
+}
+
+/* --- ESTADO 3: KILLING (Vermelho) --- */
+.healthbox.killing {
+    border-color: #ff3b3b !important; /* Vermelho */
+    background-color: rgba(255, 59, 59, 0.2) !important;
+    box-shadow: 0 0 15px rgba(255, 59, 59, 0.7), 
+                inset 0 0 10px rgba(255, 59, 59, 0.5) !important;
+}
+
+
+
+/* Transição suave e profissional ao trocar de abas */
+.window-app .tab {
+    display: none; /* Padrão do Foundry */
+}
+
+.window-app .tab.active {
+    display: block !important;
+    animation: tabSlideIn 0.3s ease-out;
+}
+
+@keyframes tabSlideIn {
+    from { 
+        opacity: 0;
+        filter: blur(5px);
+    }
+    to { 
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+/* Cria um fundo fixo para que, se o vídeo piscar, você veja uma cor sólida em vez de um clarão */
+.window-app .window-content {
+    background-color: #0a0a0a !important; /* Cor bem escura */
+    backface-visibility: hidden;
+}
+
+/* Força o vídeo a ignorar as animações de "re-entry" */
+.window-app video {
+    pointer-events: none; /* Evita que cliques no vídeo interfiram na ficha */
+    transform: translateZ(0); /* Força renderização pela GPU */
+}
+
+/* Se você estiver usando uma classe is-updating, removemos qualquer transição de opacidade */
+.window-app.is-updating video {
+    animation: none !important;
+    opacity: 1 !important;
+}
+
+/* --- ESCUDO GENÉRICO DE CLIQUES --- */
+.window-app.is-animating {
+    pointer-events: none !important; /* Desativa cliques em TUDO na ficha */
+    user-select: none;               /* Impede seleção de texto acidental */
+    cursor: wait;                    /* Muda o mouse para "espera" */
+}
+
+/* ========================================================
+   ESTILIZAÇÃO DE ELEMENTOS (TEXTO E SELECT)
+   ======================================================== */
+
+/* 1. Elementos com nowrap (Geralmente labels ou spans) */
+[style*="white-space: nowrap"], 
+.nowrap {
+    color: #ffffff !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Leve brilho para legibilidade */
+}
+
+/* 2. O Select específico .grow2x */
+select.grow2x {
+    color: #ffffff !important;
+    background-color: rgba(255, 255, 255, 0.1) !important; /* Fundo sutil para contraste */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* Estilizando as opções dentro do select para garantir que fiquem legíveis */
+select.grow2x option {
+    background-color: #1a1a1a !important; /* Fundo escuro para o texto branco aparecer */
+    color: #ffffff !important;
+}
+
+/* Foco e Hover no Select */
+select.grow2x:hover, 
+select.grow2x:focus {
+    border-color: #ffffff !important;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.2) !important;
+    outline: none;
+}
+
+/* ========================================================
+   ESTILIZAÇÃO CLARA E NEON (BUTTONS & HEADERS)
+   ======================================================== */
+
+/* 1. BOTÃO ROLL (BRANCO NEON) */
+button.dialog-button.roll {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+    transition: all 0.3s ease;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+button.dialog-button.roll:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.3), inset 0 0 10px rgba(255, 255, 255, 0.1);
+    border-color: #ffffff !important;
+}
+
+/* 2. HEADERS (H1, H2 HBOX) COM LINHA NEON EMBAIXO */
+h1.hbox, 
+h2.hbox {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+    /* A linha neon em baixo */
+    border-bottom: 2px solid #ffffff !important;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Ajuste para o botão "+" dentro do header */
+.add-focus.nogrow {
+    background: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.add-focus.nogrow:hover {
+    background: #ffffff !important;
+    color: #000000 !important; /* Inverte a cor no hover */
+}
+
+/* Garante que o texto "Foci" ou títulos cresçam corretamente */
+.hbox .grow {
+    flex-grow: 1;
+}
+
+
+/* ========================================================
+   ESTILIZAÇÃO GLOBAL DE HEADERS (H1 E H2)
+   ======================================================== */
+
+h1, h2 {
+    color: #ffffff !important;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding-bottom: 5px;
+    margin-bottom: 12px;
+    display: flex; /* Mantém o alinhamento caso haja botões dentro */
+    align-items: center;
+    
+    /* A LINHA BRANCA NEON EMBAIXO */
+    border-bottom: 2px solid #ffffff !important;
+
+    
+    /* Brilho no próprio texto */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+/* Garante que elementos dentro do H2 (como o Foci) se comportem bem */
+h2 div, h2 span {
+    flex-grow: 1;
+}
+
+/* Ajuste para botões dentro de qualquer H2 (como o de adicionar) */
+h2 button {
+    background: none !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 0 8px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+h2 button:hover {
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: 0 0 10px #ffffff;
+}
+
+/* ========================================================
+   ESTILIZAÇÃO DO NOME: TIMES NEW ROMAN + NEON AZUL
+   ======================================================== */
+
+input[name="name"].grow.hgap16.vgap8 {
+    /* Troca para Times New Roman e diminui o tamanho */
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 1.2rem !important; /* Tamanho reduzido */
+    font-weight: bold;
+    
+    /* Letra Branca */
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important; /* Sobrescreve o gradiente anterior */
+
+
+    /* Reset de fundos e bordas de input */
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(0, 210, 255, 0.3) !important;
+    outline: none;
+    
+    /* Ajuste de espaçamento */
+    padding: 2px 5px;
+}
+
+
+/* Garante que o texto de placeholder siga a mesma fonte */
+input[name="name"].grow.hgap16.vgap8::placeholder {
+    font-family: "Times New Roman", Times, serif !important;
+    color: rgba(255, 255, 255, 0.3);
+    text-shadow: none;
+}
+
+/* Configuração Geral para as Labels de Atributos */
+li.hbox.vgap8 label.grow {
+    font-size: 0 !important; /* Esconde o texto original */
+    color: white !important;
+    line-height: 0;
+}
+
+/* Garante que o novo texto apareça com o tamanho correto e visível */
+li.hbox.vgap8 label.grow::before {
+    font-size: 14px; /* Ajuste para o tamanho original da sua fonte */
+    visibility: visible;
+    display: inline-block;
+    color: white;
+}
+
+/* --- TRADUÇÕES POR ORDEM DA LISTA --- */
+
+/* 1. Body -> Corpo */
+li.hbox.vgap8:nth-child(1) label.grow::before {
+    content: "Corpo";
+}
+
+/* 2. Coordination -> Coordenação */
+li.hbox.vgap8:nth-child(2) label.grow::before {
+    content: "Coordenação";
+}
+
+/* 3. Sense -> Sentido */
+li.hbox.vgap8:nth-child(3) label.grow::before {
+    content: "Sentido";
+}
+
+/* 4. Mind -> Mente */
+li.hbox.vgap8:nth-child(4) label.grow::before {
+    content: "Mente";
+}
+
+/* 5. Charm -> Charme */
+li.hbox.vgap8:nth-child(5) label.grow::before {
+    content: "Charme";
+}
+
+/* 6. Command -> Comando */
+li.hbox.vgap8:nth-child(6) label.grow::before {
+    content: "Comando";
+}
+
+.general-roll-button {
+    background: #1a1a1a;
+    color: #00d9ff; /* Ícone azul neon */
+    border: 1px solid #00d9ff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 35px;
+    height: 28px;
+}
+
+.general-roll-button:hover {
+    background: #00d9ff;
+    color: black;
+    box-shadow: 0 0 15px #00d9ff;
+    transform: scale(1.1);
+}
+
+/* Seleciona a div que contém o texto de placeholder */
+div.grow.placeholder {
+    font-size: 0 !important; /* Esconde o texto original */
+    color: transparent !important;
+}
+
+/* Injeta o novo texto traduzido */
+div.grow.placeholder::before {
+    content: "Arraste aqui, ou clique duas vezes...";
+    font-size: 13px; /* Ajuste para o tamanho original da sua ficha */
+    visibility: visible;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* 1. Estrutura de Espaçamento Uniforme */
+.perfil-survivor-container .hbox {
+    display: flex;
+    flex-wrap: wrap; /* Faz quebrar linha se a tela diminuir */
+    justify-content: space-between; /* Distribui o espaço entre os itens */
+    gap: 15px; /* Espaço uniforme entre cada caixinha */
+}
+
+.perfil-survivor-container .hbox .vbox.grow {
+    flex: 1 1 120px; /* Garante que cresçam igualitariamente, com mínimo de 120px */
+    min-width: 120px;
+}
+
+/* 2. Estilização Geral dos Labels */
+.perfil-survivor-container label {
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+    display: block;
+    letter-spacing: 0.5px;
+}
+
+/* 3. Cores Foscas Temáticas baseadas no atributo NAME */
+/* Selecionamos o elemento 'label' que está antes do input com o nome específico */
+
+label:has(+ input[name="incendiar"]) { color: #a35a5a !important; } /* Vermelho */
+label:has(+ input[name="regar"])     { color: #5a8aa3 !important; } /* Azul */
+label:has(+ input[name="plantar"])   { color: #6a8a5a !important; } /* Verde */
+label:has(+ input[name="congelar"])  { color: #8aa3a3 !important; } /* Ciano */
+label:has(+ input[name="transportar"]) { color: #a38a5a !important; } /* Ouro */
+label:has(+ input[name="lenhar"])    { color: #8b7355 !important; } /* Marrom */
+label:has(+ input[name="minerar"])   { color: #7a7a7a !important; } /* Cinza */
+label:has(+ input[name="trabalhar"]) { color: #a3a3a3 !important; } /* Prata */
+label:has(+ input[name="coletar"])   { color: #9a6aa3 !important; } /* Roxo */
+label:has(+ input[name="purificar"]) { color: #d0d0d0 !important; } /* Branco */
+label:has(+ input[name="fortificar"]) { color: #5a5a5a !important; } /* Chumbo */
+label:has(+ input[name="desenterrar"]) { color: #8a6a4a !important; } /* Terra */
+label:has(+ input[name="analisar"])  { color: #5aa38a !important; } /* Esmeralda */
+label:has(+ input[name="reparar"])   { color: #a37a5a !important; } /* Bronze */
+label:has(+ input[name="cacar"])     { color: #4a5a4a !important; } /* Musgo */
+label:has(+ input[name="curar"])     { color: #a35a8a !important; } /* Rosa */
+label:has(+ input[name="ventilar"])  { color: #8a8ab0 !important; } /* Lavanda */
+label:has(+ input[name="energizar"]) { color: #a3a35a !important; } /* Amarelo */
+label:has(+ input[name="moldar"])    { color: #708090 !important; } /* Ardósia */
+label:has(+ input[name="rastrear"])  { color: #556b2f !important; } /* Oliva */
+
+/* 4. Estilização dos Inputs para combinar */
+.perfil-survivor-container input {
+    background: rgba(0, 0, 0, 0.3) !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+    text-align: center;
+}
+
+.grow.placeholder:hover {
+    color: #fff !important;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+}
+
+/* Animação de Abertura da Ficha */
+.wt-tech-open {
+    animation: wt-fade-in-tech 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards !important;
+    overflow: hidden;
+    pointer-events: none; /* Evita cliques durante a animação */
+}
+
+@keyframes wt-fade-in-tech {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+        filter: brightness(2) blur(10px) contrast(1.5);
+        clip-path: inset(50% 0 50% 0); /* Começa como uma linha fina no meio */
+    }
+    40% {
+        opacity: 0.7;
+        clip-path: inset(0 0 0 0); /* Abre o conteúdo */
+        filter: brightness(1.5) blur(2px) contrast(1.2);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: brightness(1) blur(0) contrast(1);
+    }
+}
+
+/* Efeito de "Scan" que passa pela ficha na abertura */
+.wt-tech-open::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%
+    );
+    background-size: 100% 200px;
+    animation: wt-scan-line 0.8s ease-out forwards;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+@keyframes wt-scan-line {
+    0% { background-position: 0 -200px; }
+    100% { background-position: 0 100%; }
+}
