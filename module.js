@@ -225,3 +225,291 @@ Hooks.on("renderWTCharacterSheet", async (app, html, data) => {
         });
     }
 });
+
+Hooks.on("renderActorSheet", (app, html, data) => {
+    // 1. Identifica o container de scroll da ficha
+    const scrollContainer = html.find('.window-content')[0];
+    
+    // 2. Recupera a posição salva (se existir)
+    const scrollTop = app._scrollPos;
+    if (scrollTop) {
+        scrollContainer.scrollTop = scrollTop;
+    }
+
+    // 3. Ouve o clique nas caixas de vida para salvar a posição antes do sistema atualizar
+    html.find('.healthbox').on('mousedown', () => {
+        app._scrollPos = scrollContainer.scrollTop;
+    });
+
+    // 4. Remove a classe de animação de entrada durante atualizações
+    // Isso evita que a ficha "deslize" de novo a cada clique
+    if (app._renderedOnce) {
+        html.css("animation", "none");
+        html.find(".tab").css("animation", "none");
+    }
+    app._renderedOnce = true;
+});
+
+Hooks.on("renderActorSheet", (app, html, data) => {
+    const sheet = html.closest('.window-app');
+    const scrollContainer = html.find('.window-content')[0];
+
+    // 1. LIMPEZA AUTOMÁTICA: Sempre que a ficha renderiza, ela "destrava"
+    sheet.removeClass('is-animating impact-glitch');
+    app._lockClick = false; 
+
+    // 2. RESTAURAR SCROLL
+    if (app._scrollPos && scrollContainer) {
+        scrollContainer.scrollTop = app._scrollPos;
+    }
+
+    // 3. SISTEMA DE BLOQUEIO GENÉRICO
+    html.on('click', '.healthbox', function(event) {
+        const box = $(this);
+
+        // Se já houver uma trava, ignora totalmente
+        if (app._lockClick) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            return false;
+        }
+
+        // Delay para o Foundry atualizar o dado antes de checarmos a classe
+        setTimeout(() => {
+            // CONDIÇÃO: Ativa se a caixa virou Shock (Amarela)
+            // Você pode adicionar outras condições aqui com || (OU)
+            if (box.hasClass('shock')) { 
+                
+                // ATIVA O ESCUDO
+                app._lockClick = true;
+                sheet.addClass('is-animating impact-glitch');
+                
+                // Salva scroll para garantir que não pule após o re-render
+                if (scrollContainer) app._scrollPos = scrollContainer.scrollTop;
+
+                // DESATIVA O ESCUDO: Após 600ms (tempo da animação + margem)
+                setTimeout(() => {
+                    app._lockClick = false;
+                    sheet.removeClass('is-animating impact-glitch');
+                }, 600);
+            }
+        }, 30);
+    });
+});
+
+
+// Procure este Hook no seu module.js e adicione as linhas de tradução:
+Hooks.on("renderWTCharacterSheet", (app, html) => {
+    
+    // --- TRADUÇÕES DE TÍTULOS E LABELS ---
+    html.find('h2:contains("Stats")').text("Atributos"); // Traduz Stats
+    html.find('h2:contains("General")').text("Geral");
+    html.find('label:contains("Points Spent")').text("Xp Gastos:");
+    html.find('label:contains("Points to Spend")').text("Xp Não Gasto:");
+    html.find('label:contains("Willpower")').text("Força de Vontade:");
+    html.find('label:contains("Base Will")').text("Vontade Base:");
+    
+
+    // --- RENOVAR ABAS (Você já tem isso, mantenha abaixo) ---
+    const tabNames = ["Geral","Atributos","Origem","Poderes","Silhueta","Anotações"];
+    html.find(".sheet-tabs .item").each((i, el) => { if(tabNames[i]) el.textContent = tabNames[i]; });
+});
+
+Hooks.on("renderWTCharacterSheet", (app, html, data) => {
+    const powersTab = html.find(".tab.powers");
+    
+    // 1. TRADUÇÕES
+    powersTab.find('.grow:contains("Foci")').text("Focos");
+    powersTab.find('.grow:contains("Hyperstats")').text("Hiper-Atributos");
+    powersTab.find('.grow:contains("Hyperskills")').text("Hiper-Perícias");
+    powersTab.find('.grow:contains("Miracles")').text("Milagres");
+
+    // 2. CABEÇALHO DE ROLAGEM GERAL
+    if (powersTab.find(".general-roll-header").length === 0) {
+        const rollHeader = $(`
+            <div class="general-roll-header" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; margin-bottom: 15px;">
+                <h2 class="hbox">
+                    <div class="grow">Rolagem Geral</div>
+                    <div class="hbox vgap4" style="align-items: center;">
+                        <input type="text" class="general-roll-input" 
+                               value="2d" 
+                               style="width: 100px; text-align: center; background: rgba(0,0,0,0.3); color: white; border: 1px solid #555; font-size: 0.75rem; height: 24px;">
+                        <button class="nogrow general-roll-button" title="Configurar Rolagem de Poder">
+                            <i class="fa-solid fa-dice"></i>
+                        </button>
+                    </div>
+                </h2>
+            </div>
+        `);
+
+        powersTab.prepend(rollHeader);
+
+        // 3. FUNÇÃO NATIVA "CONFIGURE YOUR ROLL" PERSONALIZADA
+        rollHeader.find(".general-roll-button").click(async (ev) => {
+            ev.preventDefault();
+            
+            // Pega o valor da caixa de texto
+            const formula = rollHeader.find(".general-roll-input").val();
+
+            // Usa a função core do sistema Wild Talents para abrir o diálogo
+            // 'flavor' define o nome que aparece no topo da janela "Configure Your Roll"
+            return game.wildtalents.roll(formula, {
+                flavor: "Poder", 
+                speaker: ChatMessage.getSpeaker({ actor: app.actor })
+            });
+        });
+    }
+});
+
+Hooks.on("renderWTCharacterSheet", (app, html, data) => {
+    const powersTab = html.find(".tab.powers");
+    
+    // 1. MANTER TRADUÇÕES EXISTENTES
+    powersTab.find('.grow:contains("Foci")').text("Focos");
+    powersTab.find('.grow:contains("Hyperstats")').text("Hiper-Atributos");
+    powersTab.find('.grow:contains("Hyperskills")').text("Hiper-Perícias");
+    powersTab.find('.grow:contains("Miracles")').text("Milagres");
+
+    // 2. CABEÇALHO DE ROLAGEM GERAL (TOPO DA ABA)
+    if (powersTab.find(".general-roll-header").length === 0) {
+        const rollHeader = $(`
+            <div class="general-roll-header" style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; margin-bottom: 15px;">
+                <h2 class="hbox">
+                    <div class="grow">Rolagem Geral</div>
+                    <div class="hbox vgap4" style="align-items: center;">
+                        <input type="text" class="general-roll-input" value="2d" 
+                               style="width: 100px; text-align: center; background: rgba(0,0,0,0.3); color: white; border: 1px solid #555; font-size: 0.75rem; height: 24px;">
+                        <button class="nogrow general-roll-button wt-roll-anim" title="Configurar Rolagem">
+                            <i class="fa-solid fa-dice"></i>
+                        </button>
+                    </div>
+                </h2>
+            </div>
+        `);
+        powersTab.prepend(rollHeader);
+
+        rollHeader.find(".general-roll-button").click(async (ev) => {
+            const formula = rollHeader.find(".general-roll-input").val();
+            return startRollFlow(ev, formula, "Poder");
+        });
+    }
+
+    // 3. SELEÇÃO E CUSTOMIZAÇÃO DE TODOS OS BOTÕES DE ROLAGEM
+    const allRollButtons = html.find(".roll-stat, .roll-skill, .roll-miracle, .roll-hyperskill, .roll-hyperstat");
+    allRollButtons.addClass("wt-roll-anim");
+    
+    allRollButtons.off("click").click(async (ev) => {
+        ev.preventDefault();
+        const el = $(ev.currentTarget);
+        const formula = el.attr("dice") || "2d";
+        
+        // --- DETECÇÃO DINÂMICA DE NOME + QUALIDADE ---
+        // Pega o nome do poder/perícia na mesma linha
+        const parentRow = el.closest(".hbox");
+        const powerName = parentRow.find(".grow").first().text().trim();
+        
+        // Pega o texto da qualidade (ex: Attacks, Defends, Useful) ignorando os números (+0, etc)
+        let qualityText = el.parent().text().replace(/[0-9+\-]/g, "").trim();
+        
+        const finalLabel = qualityText ? `${powerName} [${qualityText}]` : powerName;
+        
+        return startRollFlow(ev, formula, finalLabel);
+    });
+
+    // 4. FUNÇÃO DE FLUXO: ANIMAÇÃO -> MÚLTIPLAS AÇÕES -> CONFIGURAÇÃO NATIVA
+    async function startRollFlow(ev, formula, label) {
+        const button = $(ev.currentTarget);
+
+        // Animação de Inversão de Cores (Flash)
+        button.addClass("wt-anim-active");
+        setTimeout(() => button.removeClass("wt-anim-active"), 300);
+
+        // Diálogo de Múltiplas Ações / Notas de Texto
+        new Dialog({
+            title: `Ação: ${label}`,
+            content: `
+                <div style="padding: 10px;">
+                    <label style="display: block; margin-bottom: 5px;"><b>Descrição da Ação:</b></label>
+                    <input type="text" id="multi-action-note" placeholder="Ex: Múltiplas ações, Mirando..." style="width: 100%; margin-bottom: 10px;">
+                    <p style="font-size: 0.75rem; color: #777;">O texto abaixo será enviado ao chat.</p>
+                </div>
+            `,
+            buttons: {
+                roll: {
+                    icon: '<i class="fas fa-dice"></i>',
+                    label: "Abrir Diálogo de Dados",
+                    callback: async (html) => {
+                        const note = html.find("#multi-action-note").val();
+                        const chatLabel = note ? `${label} (${note})` : label;
+
+                        // Aciona o diálogo "Configure Your Roll" nativo do sistema
+                        return game.wildtalents.roll(formula, {
+                            flavor: chatLabel,
+                            speaker: ChatMessage.getSpeaker({ actor: app.actor })
+                        });
+                    }
+                }
+            },
+            default: "roll"
+        }).render(true);
+    }
+
+    // 5. CSS PARA OS EFEITOS (Invert, Brilho e Escala)
+    if (!$("style#wt-complete-effects").length) {
+        $("head").append(`
+            <style id="wt-complete-effects">
+                .wt-roll-anim { transition: all 0.15s ease-out; cursor: pointer; }
+                .wt-roll-anim:hover { filter: drop-shadow(0 0 8px #fff); transform: scale(1.15); }
+                
+                /* Classe de animação disparada pelo JS */
+                .wt-anim-active { animation: wt-flash-invert 0.3s forwards; }
+
+                @keyframes wt-flash-invert {
+                    0% { filter: invert(0); transform: scale(1); }
+                    50% { filter: invert(1) brightness(1.5) drop-shadow(0 0 12px #fff); transform: scale(1.4) rotate(10deg); }
+                    100% { filter: invert(0); transform: scale(1); }
+                }
+            </style>
+        `);
+    }
+});
+
+Hooks.on("renderWTCharacterSheet", (app, html, data) => {
+    // Seleciona a aba de Arquétipos
+    const archetypeTab = html.find(".tab.archetype");
+
+    // 1. TRADUÇÃO DOS TÍTULOS (JavaScript puro/jQuery)
+    // Buscamos o div .grow dentro de cada h2 e alteramos apenas o texto
+    archetypeTab.find('h2.hbox .grow:contains("Archetypes")').text("Arquétipos");
+    archetypeTab.find('h2.hbox .grow:contains("Sources")').text("Fontes");
+    archetypeTab.find('h2.hbox .grow:contains("Permissions")').text("Permissões");
+    archetypeTab.find('h2.hbox .grow:contains("Intrinsics")').text("Intrínsecos");
+
+    // 2. GARANTIR CONTEÚDO BRANCO (FOSCO)
+    // Isso aplica a cor branca apenas ao texto dentro do placeholder, sem mudar a fonte
+    archetypeTab.find(".placeholder").css({
+        "color": "#ffffff",
+        "opacity": "0.8"
+    });
+
+    // 3. MANTENDO O ESTILO DOS BOTÕES +
+    // Se quiser que os botões de adicionar também fiquem brancos:
+    archetypeTab.find("button.nogrow").css("color", "#ffffff");
+
+    // --- (Aqui você mantém suas outras funções de rolagem e silhueta) ---
+});
+
+Hooks.on("renderWTCharacterSheet", (app, html, data) => {
+    // Verifica se a ficha acabou de ser aberta (para não repetir a animação em cada clique)
+    if (!app._renderedOnce) {
+        html.addClass("wt-tech-open");
+        app._renderedOnce = true;
+        
+        // Remove a classe após a animação para não interferir no uso normal
+        setTimeout(() => {
+            html.removeClass("wt-tech-open");
+        }, 1200);
+    }
+
+    // --- (Aqui continuam suas outras funções: traduções, silhueta, etc.) ---
+});
